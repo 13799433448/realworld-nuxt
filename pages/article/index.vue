@@ -10,7 +10,7 @@
 
     <div class="container page">
       <div class="row article-content">
-        <mavon-editor v-model="article.body" :subfield="false" :toolbarsFlag="false" defaultOpen="preview" />
+        <mavon-editor v-model="article.body" :subfield="false" :toolbarsFlag="false" defaultOpen="preview" style="width:100%"/>
       </div>
       <hr />
       <ul class="tag-list" v-for="(subItem, subIndex) in article.tagList" :key="subIndex">

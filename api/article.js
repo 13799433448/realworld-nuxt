@@ -76,3 +76,11 @@ export const createArticle = data => {
     data
   })
 }
+// 创建文章
+export const updateArticle = (slug, data) => {
+  return request({
+    method: 'PUT',
+    url: `/api/articles/${slug}`,
+    data
+  })
+}

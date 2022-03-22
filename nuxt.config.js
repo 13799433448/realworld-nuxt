@@ -49,6 +49,11 @@ module.exports = {
               path: '/article/:slug',
               name: 'article',
               component: resolve(__dirname, 'pages/article/')
+            },
+            {
+              path: '/revise/:slug',
+              name: 'revise',
+              component: resolve(__dirname, 'pages/revise/')
             }
           ]
         }

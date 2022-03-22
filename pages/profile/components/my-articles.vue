@@ -11,6 +11,17 @@
         <button class="btn btn-outline-primary btn-sm pull-xs-right">
           <i class="ion-heart"></i> {{ item.favoritesCount }}
         </button>
+        <nuxt-link
+          class="btn btn-outline-primary btn-sm pull-xs-right"
+          :to="{
+            name: 'revise',
+            params: {
+              slug: item.slug,
+            },
+          }"
+        >
+          <i class="el-icon-edit"></i>
+        </nuxt-link>
       </div>
       <nuxt-link
         class="preview-link"
