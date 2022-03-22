@@ -64,13 +64,15 @@ module.exports = {
   ** Global CSS
   */
   css: [
-    {src:'element-ui/lib/theme-chalk/index.css'}    // 1.在 css 中配置 element-ui 的 css 位置
+    {src:'element-ui/lib/theme-chalk/index.css'},    // 1.在 css 中配置 element-ui 的 css 位置
+    {src: 'mavon-editor/dist/css/index.css'}
   ],
   // 注册插件
   plugins: [
     '~/plugins/request.js',
     '~/plugins/dayjs.js',
-    {src:'~plugins/element-ui', ssr: false}    // 2.在 plugins 中配置刚刚创建好的 plugin
+    {src:'~plugins/element-ui', ssr: false},    // 2.在 plugins 中配置刚刚创建好的 plugin,
+    {src:'~plugins/mavon-editor', ssr: false}    // 2.在 plugins 中配置刚刚创建好的 plugin
   ],
   /*
   ** Build configuration

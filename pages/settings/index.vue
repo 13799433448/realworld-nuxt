@@ -25,6 +25,7 @@
             </el-form-item>
             <el-form-item>
               <el-button type="success" @click="submitForm">Update Setting</el-button>
+              <el-button type="danger" @click="signOut">Sign Out</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -72,7 +73,7 @@ export default {
             user: this.userInfo,
           });
           this.setUser(data.user);
-          Cookie.set("user",  JSON.stringify(data.user), {
+          Cookie.set("user", JSON.stringify(data.user), {
             expires: 7,
           });
           this.$router.push("/");
@@ -81,6 +82,11 @@ export default {
           this.errors = err.response.data.errors;
         }
       }
+    },
+    signOut() {
+      Cookie.remove("user");
+      this.$router.push("/");
+      this.setUser(null);
     },
   },
 };

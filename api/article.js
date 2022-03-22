@@ -53,3 +53,26 @@ export const getComments = slug => {
     url: `/api/articles/${slug}/comments`
   })
 }
+
+// 获取点赞的文章
+export const getFavorited = (user, offset) => {
+  return request({
+    method: 'GET',
+    url: `/api/articles?favorited=${user}&offset=${offset}`
+  })
+}
+// 获取本人的文章
+export const getAuthor = (user, offset) => {
+  return request({
+    method: 'GET',
+    url: `/api/articles?author=${user}&offset=${offset}`
+  })
+}
+// 创建文章
+export const createArticle = data => {
+  return request({
+    method: 'POST',
+    url: '/api/articles',
+    data
+  })
+}
