@@ -1,0 +1,239 @@
+<template>
+  <div class="home-page">
+    <div class="banner">
+      <div class="container">
+        <h1 class="logo-font">是洋柿子啊</h1>
+        <p>A persimmon tells you to learn English.</p>
+      </div>
+    </div>
+
+    <div class="container page">
+      <div class="row">
+        <div class="col-md-9 box-height">
+          <div class="feed-toggle">
+            <ul class="nav nav-pills outline-active">
+              <li v-if="user" class="nav-item">
+                <nuxt-link
+                  class="nav-link"
+                  :class="{
+                    active: tab === 'your_feed',
+                  }"
+                  exact
+                  :to="{
+                    name: 'home',
+                    query: {
+                      tab: 'your_feed',
+                    },
+                  }"
+                  >Your Feed</nuxt-link
+                >
+              </li>
+              <li class="nav-item">
+                <nuxt-link
+                  class="nav-link"
+                  :class="{
+                    active: tab === 'global_feed',
+                  }"
+                  exact
+                  :to="{
+                    name: 'home',
+                  }"
+                  >Global Feed</nuxt-link
+                >
+              </li>
+              <li v-if="tag" class="nav-item">
+                <nuxt-link
+                  class="nav-link"
+                  :class="{
+                    active: tab === 'tag',
+                  }"
+                  exact
+                  :to="{
+                    name: 'home',
+                    query: {
+                      tab: 'tag',
+                      tag: tag,
+                    },
+                  }"
+                  ># {{ tag }}</nuxt-link
+                >
+              </li>
+            </ul>
+          </div>
+
+          <div class="article-preview" v-for="article in articles" :key="article.slug">
+            <div class="article-meta">
+              <nuxt-link
+                :to="{
+                  name: 'profile',
+                  params: {
+                    username: article.author.username,
+                  },
+                }"
+              >
+                <img :src="article.author.image" />
+              </nuxt-link>
+              <div class="info">
+                <nuxt-link
+                  class="author"
+                  :to="{
+                    name: 'profile',
+                    params: {
+                      username: article.author.username,
+                    },
+                  }"
+                >
+                  {{ article.author.username }}
+                </nuxt-link>
+                <span class="date">{{ article.createdAt | date("MMM DD, YYYY") }}</span>
+              </div>
+              <button
+                class="btn btn-outline-primary btn-sm pull-xs-right"
+                :class="{
+                  active: article.favorited,
+                }"
+                @click="onFavorite(article)"
+                :disabled="article.favoriteDisabled"
+              >
+                <i class="ion-heart"></i> {{ article.favoritesCount }}
+              </button>
+            </div>
+            <nuxt-link
+              class="preview-link"
+              :to="{
+                name: 'article',
+                params: {
+                  slug: article.slug,
+                },
+              }"
+            >
+              <h1>{{ article.title }}</h1>
+              <p>{{ article.description }}</p>
+              <span>Read more...</span>
+            </nuxt-link>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="sidebar box-height">
+            <p>Popular Tags</p>
+
+            <div class="tag-list">
+              <nuxt-link
+                :to="{
+                  name: 'home',
+                  query: {
+                    tab: 'tag',
+                    tag: item,
+                  },
+                }"
+                class="tag-pill tag-default"
+                v-for="item in tags"
+                :key="item"
+                >{{ item }}</nuxt-link
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- 分页列表 -->
+        <el-pagination
+          background
+          @current-change="handleCurrentChange"
+          :current-page.sync="page"
+          :page-size="limit"
+          layout="total, prev, pager, next"
+          :total="articlesCount"
+        >
+        </el-pagination>
+        <!-- /分页列表 -->
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { getArticles, getYourFeedArticles, addFavorite, deleteFavorite } from "@/api/article";
+import { getTags } from "@/api/tag";
+import { mapState } from "vuex";
+
+export default {
+  name: "HomeIndex",
+  async asyncData({ query }) {
+    const page = Number.parseInt(query.page || 1);
+    const limit = 10;
+    const tab = query.tab || "global_feed";
+    const tag = query.tag;
+
+    const loadArticles = tab === "global_feed" ? getArticles : getYourFeedArticles;
+
+    const [articleRes, tagRes] = await Promise.all([
+      loadArticles({
+        limit,
+        offset: (page - 1) * limit,
+        tag,
+      }),
+      getTags(),
+    ]);
+
+    const { articles, articlesCount } = articleRes.data;
+    const { tags } = tagRes.data;
+
+    articles.forEach((article) => (article.favoriteDisabled = false));
+
+    return {
+      articles, // 文章列表
+      articlesCount, // 文章总数
+      tags, // 标签列表
+      limit, // 每页大小
+      page, // 页码
+      tab, // 选项卡
+      tag, // 数据标签
+    };
+  },
+  watchQuery: ["page", "tag", "tab"],
+
+  computed: {
+    ...mapState(["user"]),
+  },
+
+  methods: {
+    async onFavorite(article) {
+      article.favoriteDisabled = true;
+      if (article.favorited) {
+        // 取消点赞
+        await deleteFavorite(article.slug);
+        article.favorited = false;
+        article.favoritesCount += -1;
+      } else {
+        // 添加点赞
+        await addFavorite(article.slug);
+        article.favorited = true;
+        article.favoritesCount += 1;
+      }
+      article.favoriteDisabled = false;
+    },
+    // 分页切换
+    handleCurrentChange(page) {
+      this.$router.push({
+        name: "home",
+        query: {
+          page,
+          tag: this.$route.query.tag,
+          tab: this.tab,
+        },
+      });
+    },
+  },
+};
+</script>
+
+<style scoped>
+.box-height {
+  max-height: 1260px;
+  overflow-x: hidden;
+}
+.box-height::-webkit-scrollbar {
+  display: none;
+}
+</style>
