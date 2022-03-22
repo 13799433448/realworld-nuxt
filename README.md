@@ -1,7 +1,8 @@
 # realworld-nuxt
 
 ## 基于
-- Vue + Nuxt
+- Vue 
+- Nuxt
 - Element-ui
 ## 地址
 [演示地址](http://106.75.65.26:3000/)
