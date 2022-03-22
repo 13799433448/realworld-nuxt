@@ -51,8 +51,8 @@ export default {
     return {
       user: {
         username: "",
-        email: "1194827696@qq.com",
-        password: "12345678",
+        email: "",
+        password: "",
       },
       rules: {
         username: [{ required: true, message: "请输入用户名", trigger: "change" }],
